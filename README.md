@@ -1,11 +1,13 @@
 Weather telegram bot
 
 ```
+
 /start - start command 
 
-/site - go to website 'sinoptik.ua'
+/temperature - show temperature today
 
-/weather - show the weather in your city
+/week_temperature - show temperature in your city a certain period of time
 
-/temperature - show temperature in your city a certain period of time
+/site, /website - - go to website 'sinoptik.ua'
+
 ```

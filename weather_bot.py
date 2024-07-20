@@ -23,24 +23,19 @@ def site(message):
 @bot.message_handler(commands=['weather'])
 def weather(message):
     s = Sinoptik('Киев')
-    res = []
+    res = ''
     time = 'ночь'
     a = s.get_data()[0]["weather_details"]["details"]
     if 'Температура, °C' in a:
-        res.append('Температура, °C')
-        res.append(a['Температура, °C'][time])
-    if 'Погода' in a and a['Погода'][time] != ['  ', '  ']:
-        res.append('Погода')
-        res.append(a['Погода'][time])
+        res += f"Температура в это время от {a['Температура, °C'][time][0]} °C до {a['Температура, °C'][time][1]} °C. "
     if 'чувствуется как ' in a:
-        res.append('чувствуется как ')
-        res.append(a['чувствуется как '][time])
+        res += f"Чувствуется как {a['чувствуется как '][time][0]} °C до {a['чувствуется как '][time][1]} °C. "
+    if 'Погода' in a and a['Погода'][time] != ['  ', '  ']:
+        res += f"Погода в это время {a['Погода'][time][0]} - {a['Погода'][time][1]}. "
     if 'Влажность, %'  in a:
-        res.append('Влажность, %')
-        res.append(a['Влажность, %'][time])
+        res += f"Влажность: {a['Влажность, %'][time][0]} % до {a['Влажность, %'][time][1]} %. "
     if 'Вероятность осадков, %' in a and a['Вероятность осадков, %'][time] != ['-', '-']:
-        res.append('Вероятность осадков, %')
-        res.append(a['Вероятность осадков, %'][time])
+        res += f"Вероятность осадков: {a['Вероятность осадков, %'][time][0]} % до {a['Вероятность осадков, %'][time][1]} %. "
 
     bot.send_message(message.chat.id, f'{res}')
 

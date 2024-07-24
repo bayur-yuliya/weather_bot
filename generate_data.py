@@ -62,3 +62,19 @@ class Sinoptik:
                     modifiArray.setdefault(key, {})[Th[itemKey]] = item
 
         return {'details': modifiArray}
+
+    def fetch_weather_data(self, city, time):
+        s = Sinoptik(city)
+        data = s.get_data()[0]["weather_details"]["details"]
+        res = ""
+        if 'Температура, °C' in data:
+            res += f"Температура от {data['Температура, °C'][time][0]} °C до {data['Температура, °C'][time][1]} °C. "
+        if 'чувствуется как ' in data:
+            res += f"Чувствуется как {data['чувствуется как '][time][0]} °C до {data['чувствуется как '][time][1]} °C. "
+        if 'Погода' in data and data['Погода'][time] != ['  ', '  ']:
+            res += f"Погода: {data['Погода'][time][0]} - {data['Погода'][time][1]}. "
+        if 'Влажность, %' in data:
+            res += f"Влажность: {data['Влажность, %'][time][0]} % до {data['Влажность, %'][time][1]} %. "
+        if 'Вероятность осадков, %' in data and data['Вероятность осадков, %'][time] != ['-', '-']:
+            res += f"Вероятность осадков: {data['Вероятность осадков, %'][time][0]} % до {data['Вероятность осадков, %'][time][1]} %. "
+        return res

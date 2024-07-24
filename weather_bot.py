@@ -22,37 +22,34 @@ def site(message):
 
 @bot.message_handler(commands=['weather'])
 def weather(message):
-    s = Sinoptik('Киев')
-    res = ''
-    time = 'ночь'
-    a = s.get_data()[0]["weather_details"]["details"]
-    if 'Температура, °C' in a:
-        res += f"Температура в это время от {a['Температура, °C'][time][0]} °C до {a['Температура, °C'][time][1]} °C. "
-    if 'чувствуется как ' in a:
-        res += f"Чувствуется как {a['чувствуется как '][time][0]} °C до {a['чувствуется как '][time][1]} °C. "
-    if 'Погода' in a and a['Погода'][time] != ['  ', '  ']:
-        res += f"Погода в это время {a['Погода'][time][0]} - {a['Погода'][time][1]}. "
-    if 'Влажность, %'  in a:
-        res += f"Влажность: {a['Влажность, %'][time][0]} % до {a['Влажность, %'][time][1]} %. "
-    if 'Вероятность осадков, %' in a and a['Вероятность осадков, %'][time] != ['-', '-']:
-        res += f"Вероятность осадков: {a['Вероятность осадков, %'][time][0]} % до {a['Вероятность осадков, %'][time][1]} %. "
+    try:
+        s = Sinoptik('Киев')
+        weather_info = s.fetch_weather_data('Киев', 'ночь')
+        bot.send_message(message.chat.id, weather_info)
+    except Exception as e:
+        bot.send_message(message.chat.id, f'Произошла ошибка при получении данных о погоде.')
+        print(f'Произошла ошибка при получении данных о погоде: {str(e)}')
 
-    bot.send_message(message.chat.id, f'{res}')
 
 
 @bot.message_handler(commands=['temperature'])
 def temperature(message):
-    s = Sinoptik('Киев')
-    bot.send_message(message.chat.id, f'Температура сегодня от {s.get_data()[0]["tMin"]} до {s.get_data()[0]["tMax"]}')
+    try:
+        s = Sinoptik('Киев')
+        data = s.get_data()[0]
+        bot.send_message(message.chat.id, f'Температура сегодня от {data["tMin"]} до {data["tMax"]}')
+    except Exception as e:
+        bot.send_message(message.chat.id, f'Произошла ошибка при получении данных о температуре: {str(e)}')
 
 
 @bot.message_handler(commands=['week_temperature'])
 def week_temperature(message):
-    s = Sinoptik('Киев')
-    a = []
-    for el in s.get_data():
-        a.append(el['day'] + ': ' + el['tMin'] + " - " + el['tMax'])
-    bot.send_message(message.chat.id, f'Температура на неделю: {", ".join(a)}')
+    try:
+        s = Sinoptik('Киев')
+        week_data = [f"{el['day']}: {el['tMin']} - {el['tMax']}" for el in s.get_data()]
+        bot.send_message(message.chat.id, f'Температура на неделю: {", ".join(week_data)}')
+    except Exception as e:
+        bot.send_message(message.chat.id, f'Произошла ошибка при получении данных на неделю: {str(e)}')
 
 
 @bot.message_handler()

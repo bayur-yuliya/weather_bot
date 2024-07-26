@@ -36,7 +36,8 @@ def weather(message):
     try:
         city = user_data.get(message.chat.id)
         s = Sinoptik(city)
-        weather_info = s.fetch_weather_data(city, get_time_period())
+        time = get_time_period()
+        weather_info = s.fetch_weather_data(city, time[0], time[1])
         bot.send_message(message.chat.id, weather_info)
     except Exception as e:
         bot.send_message(message.chat.id, f'Произошла ошибка при получении данных о погоде. '

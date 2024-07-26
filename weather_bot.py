@@ -2,7 +2,7 @@ import telebot
 import webbrowser
 
 from config import secret_token
-from generate_data import Sinoptik
+from generate_data import Sinoptik, get_time_period
 
 
 API_TOKEN = secret_token
@@ -36,10 +36,12 @@ def weather(message):
     try:
         city = user_data.get(message.chat.id)
         s = Sinoptik(city)
-        weather_info = s.fetch_weather_data(city, 'ночь')
+        time = get_time_period()
+        weather_info = s.fetch_weather_data(city, time[0], time[1])
         bot.send_message(message.chat.id, weather_info)
     except Exception as e:
-        bot.send_message(message.chat.id, f'Произошла ошибка при получении данных о погоде.')
+        bot.send_message(message.chat.id, f'Произошла ошибка при получении данных о погоде. '
+                                          f'Если Вы не указали город, укажите город в формате: /city <название города>')
         print(f'Произошла ошибка при получении данных о погоде: {str(e)}')
 
 
@@ -50,8 +52,9 @@ def temperature(message):
         data = s.get_data()[0]
         bot.send_message(message.chat.id, f'Температура сегодня от {data["tMin"]} до {data["tMax"]}')
     except Exception as e:
-        bot.send_message(message.chat.id, f'Произошла ошибка при получении данных о температуре: {str(e)}')
-
+        bot.send_message(message.chat.id, f'Произошла ошибка при получении данных о температуре. '
+                                          f'Если Вы не указали город, укажите город в формате: /city <название города>')
+        print(f'Произошла ошибка при получении данных о температуре: {str(e)}')
 
 @bot.message_handler(commands=['week_temperature'])
 def week_temperature(message):
@@ -60,7 +63,8 @@ def week_temperature(message):
         week_data = [f"{el['day']}: {el['tMin']} - {el['tMax']}" for el in s.get_data()]
         bot.send_message(message.chat.id, f'Температура на неделю: {", ".join(week_data)}')
     except Exception as e:
-        bot.send_message(message.chat.id, f'Произошла ошибка при получении данных на неделю.')
+        bot.send_message(message.chat.id, f'Произошла ошибка при получении данных на неделю. '
+                                          f'Если Вы не указали город, укажите город в формате: /city <название города>')
         print(f'Произошла ошибка при получении данных на неделю: {str(e)}')
 
 @bot.message_handler()

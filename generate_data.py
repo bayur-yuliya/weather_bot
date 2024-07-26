@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-
+from datetime import datetime
 
 class Sinoptik:
     def __init__(self, city):
@@ -63,18 +63,41 @@ class Sinoptik:
 
         return {'details': modifiArray}
 
-    def fetch_weather_data(self, city, time):
+    def fetch_weather_data(self, city, time, time2):
         s = Sinoptik(city)
         data = s.get_data()[0]["weather_details"]["details"]
         res = ""
         if 'Температура, °C' in data:
-            res += f"Температура от {data['Температура, °C'][time][0]} °C до {data['Температура, °C'][time][1]} °C. "
+            res += f"Температура {data['Температура, °C'][time][time2]} °C "
         if 'чувствуется как ' in data:
-            res += f"Чувствуется как {data['чувствуется как '][time][0]} °C до {data['чувствуется как '][time][1]} °C. "
-        if 'Погода' in data and data['Погода'][time] != ['  ', '  ']:
-            res += f"Погода: {data['Погода'][time][0]} - {data['Погода'][time][1]}. "
+            res += f"Чувствуется как {data['чувствуется как '][time][time2]} °C "
+        if 'Давление, мм' in data and data['Давление, мм'][time][time2] != '  ':
+            res += f"Давление: {data['Давление, мм'][time][time2]} мм "
         if 'Влажность, %' in data:
-            res += f"Влажность: {data['Влажность, %'][time][0]} % до {data['Влажность, %'][time][1]} %. "
-        if 'Вероятность осадков, %' in data and data['Вероятность осадков, %'][time] != ['-', '-']:
-            res += f"Вероятность осадков: {data['Вероятность осадков, %'][time][0]} % до {data['Вероятность осадков, %'][time][1]} %. "
+            res += f"Влажность: {data['Влажность, %'][time][time2]} %"
+        if 'Вероятность осадков, %' in data and data['Вероятность осадков, %'][time][time2] != '-':
+            res += f"Вероятность осадков: {data['Вероятность осадков, %'][time][time2]} %"
         return res
+
+
+def get_time_period():
+    current_hour = datetime.now().hour
+    if 0 <= current_hour < 3:
+        return ('ночь', 0)
+    elif 3 <= current_hour < 6:
+        return ('ночь', 1)
+
+    elif 6 <= current_hour < 9:
+        return ('утро', 0)
+    elif 9 <= current_hour < 12:
+        return ('утро', 1)
+
+    elif 12 <= current_hour < 15:
+        return ('день', 0)
+    elif 15 <= current_hour < 18:
+        return ('день', 1)
+
+    elif 18 <= current_hour < 21:
+        return ('вечер', 0)
+    else:
+        return ('вечер', 1)

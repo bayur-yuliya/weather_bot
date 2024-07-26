@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-
+from datetime import datetime
 
 class Sinoptik:
     def __init__(self, city):
@@ -76,5 +76,21 @@ class Sinoptik:
         if 'Влажность, %' in data:
             res += f"Влажность: {data['Влажность, %'][time][0]} % до {data['Влажность, %'][time][1]} %. "
         if 'Вероятность осадков, %' in data and data['Вероятность осадков, %'][time] != ['-', '-']:
-            res += f"Вероятность осадков: {data['Вероятность осадков, %'][time][0]} % до {data['Вероятность осадков, %'][time][1]} %. "
+            if data['Вероятность осадков, %'][time][0] == '-':
+                res += f"Вероятность осадков: 0 % до {data['Вероятность осадков, %'][time][1]} %. "
+            else:
+                res += f"Вероятность осадков: {data['Вероятность осадков, %'][time][0]} % до {data['Вероятность осадков, %'][time][1]} %. "
         return res
+
+
+def get_time_period():
+    current_hour = datetime.now().hour
+    print(current_hour)
+    if 0 <= current_hour < 6:
+        return 'ночь'
+    elif 6 <= current_hour < 12:
+        return 'утро'
+    elif 12 <= current_hour < 18:
+        return 'день'
+    else:
+        return 'вечер'

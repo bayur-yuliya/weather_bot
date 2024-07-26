@@ -2,7 +2,7 @@ import telebot
 import webbrowser
 
 from config import secret_token
-from generate_data import Sinoptik
+from generate_data import Sinoptik, get_time_period
 
 
 API_TOKEN = secret_token
@@ -36,7 +36,7 @@ def weather(message):
     try:
         city = user_data.get(message.chat.id)
         s = Sinoptik(city)
-        weather_info = s.fetch_weather_data(city, 'ночь')
+        weather_info = s.fetch_weather_data(city, get_time_period())
         bot.send_message(message.chat.id, weather_info)
     except Exception as e:
         bot.send_message(message.chat.id, f'Произошла ошибка при получении данных о погоде. '

@@ -161,3 +161,4 @@ cython_debug/
 
 config.py
 venv/
+weather_bot_log.txt
